@@ -6,18 +6,18 @@ K-과자·빙과(HS 1704 · 1806 · 1905 · 2105) 수출 유망국 TOP3 를 명�
 
 ## 돌리기
 
-윈도우 PowerShell 에서 한 줄씩 붙인다. 파이썬 3.12, 외부 패키지는 쓰지 않는다.
+윈도우 PowerShell 에서, 저장소 폴더를 연 채로 한 줄씩 붙인다. 파이썬 3.12, 외부 패키지는 쓰지 않는다.
 
 ```powershell
-python -m venv "C:\경로\kfood-top3-agent\.venv"
+python -m venv .venv
 ```
 
 ```powershell
-& "C:\경로\kfood-top3-agent\.venv\Scripts\python.exe" -m pip install -e "C:\경로\kfood-top3-agent"
+.\.venv\Scripts\python -m pip install -e .
 ```
 
 ```powershell
-& "C:\경로\kfood-top3-agent\.venv\Scripts\python.exe" -m top3 run
+.\.venv\Scripts\python -m top3 run
 ```
 
 끝나면 `out\<실행 id>\card.md` 를 연다. 같은 폴더에 `card.json`, `metrics.json`, 되감기 시점마다 무엇을 골랐는지 적은 `log.txt` 가 있다.
@@ -65,7 +65,7 @@ LLM 키 없이 끝까지 돈다. 빠지는 것은 글을 읽는 반론 — 규�
 ## 시험
 
 ```powershell
-& "C:\경로\kfood-top3-agent\.venv\Scripts\python.exe" -m pytest "C:\경로\kfood-top3-agent\tests" -q
+.\.venv\Scripts\python -m pytest -q
 ```
 
 네트워크 없이 돈다. 공개 저장소 숫자를 재현하는 시험은 `data\raw\` 에 실측 07 원자료가 있을 때만 돌고, 없으면 건너뛴다.
