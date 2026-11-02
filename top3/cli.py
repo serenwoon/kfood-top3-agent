@@ -26,7 +26,8 @@ def main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv)
 
     home = paths.home()
-    run, ds = pipeline.run(home, auto=args.auto, offline=args.offline)
+    # --repeat 는 같은 조건끼리 비교하려고 첫 실행도 자동으로 돌린다(사람 승인이 섞이면 거짓으로 1 미만이 된다)
+    run, ds = pipeline.run(home, auto=args.auto or args.repeat > 1, offline=args.offline)
     if args.repeat > 1:
         first = _signature(run)
         same = sum(_signature(pipeline.run(home, auto=True, offline=True)[0]) == first

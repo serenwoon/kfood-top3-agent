@@ -1,10 +1,9 @@
 """세계은행 API — 카드의 맥락 열(인구, 1인당 GDP). 값이 없으면 None."""
-import json
 import time
 import urllib.request
 from pathlib import Path
 
-from .comtrade import _download
+from .comtrade import _download, read_cache
 
 INDICATORS = {"population": "SP.POP.TOTL", "gdp_pc": "NY.GDP.PCAP.CD"}
 URL = "https://api.worldbank.org/v2/country/all/indicator/{id}?format=json&date={year}&per_page=400"
@@ -12,11 +11,12 @@ URL = "https://api.worldbank.org/v2/country/all/indicator/{id}?format=json&date=
 
 def _rows(raw_dir: Path, ind: str, year: int, opener, sleep) -> list[dict]:
     path = raw_dir / f"wb_{ind}_{year}.json"
-    if path.exists():
-        data = json.loads(path.read_text(encoding="utf-8"))
-    else:
+    data = read_cache(path)
+    if data is None:
         raw_dir.mkdir(parents=True, exist_ok=True)
-        data = _download(URL.format(id=ind, year=year), path, opener, sleep)
+        # 정상 응답은 [메타, 행 목록] 두 칸. 오류는 [{"message": ...}] 한 칸이라 저장하지 않는다
+        data = _download(URL.format(id=ind, year=year), path, opener, sleep,
+                         valid=lambda d: isinstance(d, list) and len(d) == 2)
     return data[1] if isinstance(data, list) and len(data) > 1 and data[1] else []
 
 

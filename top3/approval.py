@@ -13,6 +13,7 @@ class Approval:
     approved: bool
     by: str          # 사람 | 자동 | 응답 없음
     what: str
+    kind: str = "top3"   # top3 | hold
 
 
 def _ask(prompt: str, input_fn) -> tuple[bool | None, str]:
@@ -26,9 +27,9 @@ def _ask(prompt: str, input_fn) -> tuple[bool | None, str]:
 def confirm_hold(country: str, reasons: list[str], auto: bool, input_fn=input) -> Approval:
     what = f"{country} 보류 — " + " / ".join(reasons)
     if auto:
-        return Approval(False, "자동", what)
+        return Approval(False, "자동", what, kind="hold")
     ok, by = _ask(f"[승인 1] {country}: 보류 제안 — {' / '.join(reasons)}\n  후보에서 뺄까요? [y/N] ", input_fn)
-    return Approval(bool(ok), by, what)
+    return Approval(bool(ok), by, what, kind="hold")
 
 
 def confirm_top3(summary: str, auto: bool, input_fn=input) -> Approval:

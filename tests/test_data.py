@@ -15,6 +15,15 @@ def test_market_none_when_not_all_codes_reported(raw_small):
     assert market(ds, 2020, 784, ["1704", "1806"]) is None            # 1704만 신고 → None, 0 아님
 
 
+def test_corrupt_raw_file_named_in_error(raw_small):
+    """리뷰 I2: 깨진 원자료는 파일 경로가 든 메시지로 멈춘다."""
+    import pytest
+    (raw_small / "kr_export_2020_1704.json").write_text("{", encoding="utf-8")
+    with pytest.raises(SystemExit) as e:
+        load(raw_small, ["1704"], range(2019, 2021))
+    assert "kr_export_2020_1704.json" in str(e.value)
+
+
 def test_export_missing_row_is_zero(raw_small):
     ds = load(raw_small, ["1704"], range(2019, 2021))
     assert export(ds, 2020, 999) == 0.0

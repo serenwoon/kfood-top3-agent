@@ -33,6 +33,8 @@ class RunResult:
     kr_context: dict[int, float] = field(default_factory=dict)
     sources_failed: list[str] = field(default_factory=list)
     reproducibility: float | None = None
+    fetched_range: tuple[str, str] | None = None
+    excluded_methods: list[str] = field(default_factory=list)
 
 
 def _musd(v) -> str:
@@ -40,6 +42,9 @@ def _musd(v) -> str:
 
 
 def _approval_label(a: Approval) -> str:
+    if a.kind == "hold":
+        return {"자동": "자동(보류 적용 안 함)", "응답 없음": "사람 응답 없음(보류 적용 안 함)"}.get(
+            a.by, "사람이 보류를 승인" if a.approved else "사람이 보류를 거절")
     if a.by == "자동":
         return "자동(사람 확인 안 함)"
     if a.by == "응답 없음":
@@ -127,9 +132,12 @@ def render_card(run: RunResult, ds) -> str:
         lines += ["## 받지 못한 원자료", ""] + [f"- {m}" for m in run.missing] + [""]
     if run.sources_failed:
         lines += ["## 받지 못한 글 자료", ""] + [f"- {u}" for u in run.sources_failed] + [""]
+    fetched = (f"받은 날짜: {run.fetched_range[0]} ~ {run.fetched_range[1]}" if run.fetched_range
+               else "받은 날짜: 기록 없음(이 프로그램이 받지 않은 원자료)")
     lines += ["## 출처", "",
               "- UN Comtrade 공개 API(preview) — 한국의 상대국별 수출, 각국 세계 수입. 받은 응답은 data\\raw\\ 에 그대로 있다",
-              "- 세계은행 API — 인구(SP.POP.TOTL), 1인당 GDP(NY.GDP.PCAP.CD)", ""]
+              "- 세계은행 API — 인구(SP.POP.TOTL), 1인당 GDP(NY.GDP.PCAP.CD)",
+              f"- {fetched}", ""]
     return "\n".join(lines)
 
 

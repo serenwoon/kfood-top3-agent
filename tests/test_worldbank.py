@@ -28,6 +28,16 @@ def test_null_value_stays_none(tmp_path):
     assert out["MNG"]["population"] is None and out["MNG"]["gdp_pc"] == 5_000.0
 
 
+def test_error_body_not_cached(tmp_path):
+    """리뷰 I3: 세계은행 오류 본문([{"message": ...}])을 정상 캐시로 저장하지 않는다."""
+    import pytest
+    from top3.comtrade import FetchError
+    err = json.dumps([{"message": [{"id": "120", "value": "Invalid value"}]}]).encode()
+    with pytest.raises(FetchError):
+        fetch(tmp_path, 2024, opener=lambda req, timeout=None: _Resp(err), sleep=lambda s: None)
+    assert not list(tmp_path.glob("wb_*.json"))
+
+
 def test_unknown_code_gets_none_context():
     ds = make_ds(kr={(2024, 124): 1.0, (2024, 490): 1.0}, names={124: "Canada", 490: "Other Asia, nes"})
     table = {124: {"name": "Canada", "iso3": "CAN"}, 490: {"name": "Other Asia, nes", "iso3": "S19"}}

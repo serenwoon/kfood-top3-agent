@@ -68,6 +68,21 @@ def test_blank_values_listed_not_zero(ds_card, reg):
     assert "Mongolia: 인구" in text
 
 
+def test_hold_rejection_not_read_as_top3_rejection(ds_card, reg):
+    """보류를 사람이 거절한 기록이 「TOP3 를 확정하지 않음」으로 읽히면 안 된다."""
+    run = _run(reg)
+    run.recs["expand"].approvals = [Approval(False, "사람", "Mongolia 보류 — x", kind="hold")]
+    text = render_card(run, ds_card)
+    assert "사람이 보류를 거절" in text
+    assert "사람이 확정하지 않음 — Mongolia" not in text
+
+
+def test_card_shows_fetched_dates(ds_card, reg):
+    run = _run(reg)
+    run.fetched_range = ("2026-11-02T11:00:00", "2026-11-02T11:20:00")
+    assert "받은 날짜: 2026-11-02T11:00:00 ~ 2026-11-02T11:20:00" in render_card(run, ds_card)
+
+
 def test_metrics_and_json(ds_card, reg):
     m = metrics(_run(reg))
     assert m["expand"]["method"] == "size"

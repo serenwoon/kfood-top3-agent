@@ -82,6 +82,9 @@ def tmp_home_with_fixture_raw(tmp_path, monkeypatch) -> Path:
             imports.append(row(c, 0, 100e6 + i * 10e6 + (y - 2013) * 1e6, rdesc=name))
         write_raw(raw, f"kr_export_{y}_1704", rows)
         write_raw(raw, f"world_import_{y}_1704", imports)
+        for h in ("1806", "1905", "2105"):        # 나머지 코드는 「받았지만 행 없음」
+            write_raw(raw, f"kr_export_{y}_{h}", [])
+            write_raw(raw, f"world_import_{y}_{h}", [])
     monkeypatch.setenv("TOP3_HOME", str(tmp_path))
     return tmp_path
 

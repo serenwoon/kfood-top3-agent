@@ -36,7 +36,10 @@ def is_aggregate(code: int, desc: str | None) -> bool:
 def _rows(path: Path) -> list[dict]:
     if not path.exists():
         return []
-    return json.loads(path.read_text(encoding="utf-8")).get("data") or []
+    try:
+        return json.loads(path.read_text(encoding="utf-8")).get("data") or []
+    except json.JSONDecodeError:
+        raise SystemExit(f"깨진 원자료 파일: {path}\n이 파일을 지우고 같은 명령을 다시 돌리면 새로 받는다.")
 
 
 def load(raw_dir: Path, hs: list[str], years: range, hs6: list[str] = ()) -> Dataset:
