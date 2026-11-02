@@ -133,7 +133,7 @@ def render_card(run: RunResult, ds) -> str:
     if run.sources_failed:
         lines += ["## 받지 못한 글 자료", ""] + [f"- {u}" for u in run.sources_failed] + [""]
     fetched = (f"받은 날짜: {run.fetched_range[0]} ~ {run.fetched_range[1]}" if run.fetched_range
-               else "받은 날짜: 기록 없음(이 프로그램이 받지 않은 원자료)")
+               else "받은 날짜: 기록 없음(받은 시각을 남기기 전에 받은 원자료)")
     lines += ["## 출처", "",
               "- UN Comtrade 공개 API(preview) — 한국의 상대국별 수출, 각국 세계 수입. 받은 응답은 data\\raw\\ 에 그대로 있다",
               "- 세계은행 API — 인구(SP.POP.TOTL), 1인당 GDP(NY.GDP.PCAP.CD)",
