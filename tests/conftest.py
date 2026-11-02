@@ -69,6 +69,23 @@ needs_real_raw = pytest.mark.skipif(
 )
 
 
+@pytest.fixture
+def tmp_home_with_fixture_raw(tmp_path, monkeypatch) -> Path:
+    """홈 폴더 하나 — 2013~2024 한국 수출(HS 1704만)과 그 나라들의 세계 수입. 네트워크 없이 끝까지 돈다."""
+    raw = tmp_path / "data" / "raw"
+    countries = {124: "Canada", 156: "China", 392: "Japan", 704: "Viet Nam", 840: "USA", 496: "Mongolia"}
+    for y in range(2013, 2025):
+        rows, imports = [], []
+        for i, (c, name) in enumerate(countries.items()):
+            base = (i + 3) * 1e6
+            rows.append(row(410, c, round(base * (1 + 0.05 * (i + 1) * (y - 2013))), pdesc=name))
+            imports.append(row(c, 0, 100e6 + i * 10e6 + (y - 2013) * 1e6, rdesc=name))
+        write_raw(raw, f"kr_export_{y}_1704", rows)
+        write_raw(raw, f"world_import_{y}_1704", imports)
+    monkeypatch.setenv("TOP3_HOME", str(tmp_path))
+    return tmp_path
+
+
 @pytest.fixture(scope="session")
 def ds_real():
     """실측 07 과 같은 범위(2013~2024, 4코드)로 읽은 실제 원자료."""
