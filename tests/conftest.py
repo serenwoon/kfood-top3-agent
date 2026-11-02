@@ -67,3 +67,10 @@ needs_real_raw = pytest.mark.skipif(
     not (REAL_RAW / "kr_export_2016_1704.json").exists(),
     reason="실측 07 원자료가 data/raw 에 없다",
 )
+
+
+@pytest.fixture(scope="session")
+def ds_real():
+    """실측 07 과 같은 범위(2013~2024, 4코드)로 읽은 실제 원자료."""
+    from top3.data import load
+    return load(REAL_RAW, ["1704", "1806", "1905", "2105"], range(2013, 2025))
