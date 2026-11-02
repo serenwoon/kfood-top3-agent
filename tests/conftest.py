@@ -48,6 +48,21 @@ def raw_small(tmp_path) -> Path:
     return d
 
 
+@pytest.fixture
+def reg():
+    from top3.config import load_registry
+    return load_registry(Path(__file__).resolve().parents[1] / "registry.json")
+
+
+def make_ds(kr=None, world=None, reported=None, names=None, hs6_imports=None, kr_hs6_world=None):
+    """손으로 Dataset 을 만든다. world 를 주면 reported 는 네 코드 모두 신고한 것으로 채운다."""
+    from top3.data import Dataset
+    world = world or {}
+    if reported is None:
+        reported = {k: {"1704", "1806", "1905", "2105"} for k in world}
+    return Dataset(kr or {}, world, reported, names or {}, hs6_imports or {}, kr_hs6_world or {})
+
+
 needs_real_raw = pytest.mark.skipif(
     not (REAL_RAW / "kr_export_2016_1704.json").exists(),
     reason="실측 07 원자료가 data/raw 에 없다",
