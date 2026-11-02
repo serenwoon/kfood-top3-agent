@@ -74,6 +74,15 @@ def load(raw_dir: Path, hs: list[str], years: range, hs6: list[str] = ()) -> Dat
     return Dataset(kr, world, reported, names, hs6_imports, kr_hs6_world)
 
 
+def attach_context(ds: Dataset, table: dict[int, dict], wb: dict[str, dict], year: int) -> None:
+    """나라마다 맥락 값(인구·1인당 GDP)을 붙인다. 코드표나 세계은행에 없으면 None."""
+    for code in {c for (_, c) in ds.kr}:
+        iso3 = table.get(code, {}).get("iso3")
+        v = wb.get(iso3, {}) if iso3 else {}
+        ds.context[code] = {"iso3": iso3, "name": table.get(code, {}).get("name") or ds.names.get(code),
+                            "population": v.get("population"), "gdp_pc": v.get("gdp_pc"), "year": year}
+
+
 def export(ds: Dataset, year: int, code: int) -> float:
     """한국이 직접 신고한 수출. 행이 없으면 거래 없음 = 0."""
     return ds.kr.get((year, code), 0.0)
