@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kfood-top3-agent"
+version = "0.1.0"
+description = "K-과자·빙과 수출 유망국 TOP3 — 되감기와 반론을 통과한 근거만 남긴다"
+requires-python = ">=3.12"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[tool.setuptools]
+packages = ["top3"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
